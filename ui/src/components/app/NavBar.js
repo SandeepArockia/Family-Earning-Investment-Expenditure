@@ -10,11 +10,11 @@ const NavBar = () => {
         </Typography>
       <div>
 
-        <Link to="user" style={{ color: "white", textDecoration: "none" }}>
+        <Link to="/user" style={{ color: "white", textDecoration: "none" }}>
           <Button color="inherit">Users</Button>
         </Link>
         <Link
-          to="transaction"
+          to="/transaction"
           style={{ color: "white", textDecoration: "none" }}
         >
           <Button color="inherit">Transaction</Button>

@@ -68,6 +68,12 @@ const ManageTransaction = () => {
   return (
     <div className="transaction">
       <div className="transaction-card-list">
+        <Card
+          class={`transaction-card`}
+          onClick={() => history.push("/transaction")}
+        >
+          <Button variant={"outlined"} fullWidth={true}>Add Transaction</Button>
+        </Card>
         {transactionList.map((t) => {
           return (
             <Card
@@ -161,7 +167,7 @@ const ManageTransaction = () => {
             </Select>
           </FormControl>
 
-          <div style={{ float: "right", paddingRight: '28px' }}>
+          <div style={{ float: "right", paddingRight: "28px" }}>
             <Button variant={"contained"} color="primary">
               Edit
             </Button>
