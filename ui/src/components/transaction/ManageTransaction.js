@@ -2,7 +2,6 @@ import {
   Box,
   Button,
   Card,
-  CardActions,
   CardContent,
   FormControl,
   InputLabel,
@@ -20,6 +19,8 @@ import {
   BsCreditCardFill,
   FaFileSignature,
 } from "react-icons/all";
+import { TRANSACTION_LIST } from "./dbdata";
+import { axios } from "axios";
 
 const ManageTransaction = () => {
   const { id } = useParams();
@@ -38,8 +39,19 @@ const ManageTransaction = () => {
     },
   });
 
+  const getAllData = async () => axios.get("/transactions");
+
+  const postData = async (data) => axios.post("/transaction", { data });
+
+  const putData = async (id, data) => axios.put("/transaction/" + id, { data });
+
+  const deleteData = async (id, data) =>
+    axios.delete("/transaction/" + id, { data });
+
   useEffect(() => {
-    setTransactionList(TRANSACTION_LIST);
+    getAllData().then((res) => {
+      setTransactionList(res);
+    });
   }, []);
 
   useEffect(() => {
@@ -61,8 +73,8 @@ const ManageTransaction = () => {
   const TypeClass = {
     Earning: "earning-card",
     Expenditure: "expenditure-card",
-    Investments: "investment-card",
-    "Loan Payment": "expenditure-card",
+    Investment: "investment-card",
+    Loan: "expenditure-card",
   };
 
   return (
@@ -72,7 +84,9 @@ const ManageTransaction = () => {
           class={`transaction-card`}
           onClick={() => history.push("/transaction")}
         >
-          <Button variant={"outlined"} fullWidth={true}>Add Transaction</Button>
+          <Button variant={"outlined"} fullWidth={true}>
+            Add Transaction
+          </Button>
         </Card>
         {transactionList.map((t) => {
           return (
@@ -93,7 +107,7 @@ const ManageTransaction = () => {
                 </div>
 
                 <Typography gutterBottom variant="subtitle2" component="div">
-                  {t.accountNo.match(/.{1,4}/g).join(" - ")}
+                  {(t?.accountId + "XXXXXXXXXX")?.match(/.{1,4}/g)?.join(" - ")}
                   <Typography sx={{ fontSize: 14 }} gutterBottom>
                     ₹&nbsp;{t.amount}
                   </Typography>
@@ -122,8 +136,7 @@ const ManageTransaction = () => {
           })}
           {getTextField({
             label: "Account No.",
-            type: "number",
-            ...getPayloadDataHook("accountNo"),
+            ...getPayloadDataHook("accountId"),
           })}
           {getTextField({
             label: "Date",
@@ -142,8 +155,8 @@ const ManageTransaction = () => {
             >
               <MenuItem value={"Earning"}>Earning</MenuItem>
               <MenuItem value={"Expenditure"}>Expenditure</MenuItem>
-              <MenuItem value={"Investments"}>Investments</MenuItem>
-              <MenuItem value={"Loan Payment"}>Loan Payment</MenuItem>
+              <MenuItem value={"Investment"}>Investment</MenuItem>
+              <MenuItem value={"Loan"}>Loan</MenuItem>
             </Select>
           </FormControl>
           {getTextField({ label: "Type", ...getPayloadDataHook("type") })}
@@ -168,10 +181,18 @@ const ManageTransaction = () => {
           </FormControl>
 
           <div style={{ float: "right", paddingRight: "28px" }}>
-            <Button variant={"contained"} color="primary">
-              Edit
+            <Button
+              variant={"contained"}
+              color="primary"
+              onClick={
+                id === undefined
+                  ? () => postData(payload)
+                  : () => putData(id, payload)
+              }
+            >
+              {id === undefined ? "Add" : "Edit"}
             </Button>
-            <Button>Delete</Button>
+            <Button onClick={() => deleteData(id, payload)}>Delete</Button>
           </div>
         </div>
       </Box>
@@ -180,78 +201,3 @@ const ManageTransaction = () => {
 };
 
 export default ManageTransaction;
-
-const TRANSACTION_LIST = [
-  {
-    id: 1,
-    accountNo: "1111111111111111",
-    subtype: "1",
-    type: "Earning",
-    amount: "1",
-    mode: "Cash",
-    date: "2021-10-06",
-  },
-  {
-    id: 2,
-    accountNo: "123334456765432",
-    subtype: "q",
-    type: "Earning",
-    amount: "1",
-    mode: "Cash",
-    date: "2021-10-06",
-  },
-  {
-    id: 3,
-    accountNo: "1234567654323",
-    subtype: "w",
-    type: "Expenditure",
-    amount: "1",
-    mode: "Card",
-    date: "2021-10-06",
-  },
-  {
-    id: 4,
-    accountNo: "41234567643",
-    subtype: "e",
-    type: "Investments",
-    amount: "1",
-    mode: "Cheque",
-    date: "2021-10-06",
-  },
-  {
-    id: 5,
-    accountNo: "123456754325",
-    subtype: "r",
-    type: "Loan Payment",
-    amount: "1",
-    mode: "Account",
-    date: "2021-10-06",
-  },
-  {
-    id: 6,
-    accountNo: "612345765432",
-    subtype: "t",
-    type: "Expenditure",
-    amount: "1",
-    mode: "1",
-    date: "2021-10-06",
-  },
-  {
-    id: 7,
-    accountNo: "71234564322",
-    subtype: "y",
-    type: "Earning",
-    amount: "1",
-    mode: "1",
-    date: "2021-10-06",
-  },
-  {
-    id: 8,
-    accountNo: "81234565432",
-    subtype: "u",
-    type: "Earning",
-    amount: "1",
-    mode: "1",
-    date: "2021-10-06",
-  },
-];
